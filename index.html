@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <title>Web3 Metamask Login</title>
+        <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+      </head>
+
+    <body class="flex w-screen h-screen justify-center items-center">
+        <div class="flex-col space-y-2 justify-center items-center">
+            <button 
+            id='loginButton' 
+            onclick="" 
+            class="mx-auto rounded-md p-2 bg-purple-500 text-white">
+              Login with MetaMask
+            </button>
+            <p id='userWallet' class='text-lg text-gray-600 my-2'></p>
+          </div>
+
+
+          <script>
+            //   User wallet adres
+            window.userWalletAddress = null
+            //   Set the login button in the DOM
+            const loginButton = document.getElementById('loginButton')
+            const userWallet = document.getElementById('userWallet')
+            
+            // 
+            function toggleButton(){
+                    
+                    // Check if we have Metamask installed
+                    if (!window.ethereum) {
+                        // Change the text of the button
+                            loginButton.innerText = "Metamask is not installed"
+                            // Change the styling
+                            loginButton.classList.remove('bg-purple-500', 'text-white')
+                            loginButton.classList.add('bg-gray-500', 'text-gray-100', 'cursor-not-allowed')
+                            return false
+                        }
+
+                        // Add a event listener if there is a click
+                        loginButton.addEventListener('click', loginWithMetaMask)
+                    };
+
+                    // login function
+                    async function loginWithMetaMask(){
+                        console.log("We gaan nu account ophalen")
+                        // Get account from the wallet
+                        const accounts =  await window.ethereum.request({ method: 'eth_requestAccounts'}).catch((e) => {
+                            // Catch it if user reject login
+                            console.error(e.message)
+                            return
+                        })
+                        // If no accounts please return
+                        if(!accounts){
+                            return
+                        }
+
+                        window.userWalletAddress = accounts[0]
+                        // Set the adress as innertext
+                        userWallet.innerText = window.userWalletAddress
+                        // change button text to sign out
+                        loginButton.innerText = "Sign out of Metamask"
+
+                        // Remove event listener for click after
+                        loginButton.removeEventListener('click', loginWithMetaMask)
+                        setTimeout(() => {
+                            loginButton.addEventListener('click', signOutOfMetaMask)
+                        }, 200)
+
+                    }
+
+                    // logout function
+                    function signOutOfMetaMask(){
+                        window.userWalletAddress = null
+                        userWallet.innerText = ''
+                        loginButton.innerText = 'Sign in with MetaMask'
+
+                        loginButton.removeEventListener('click', signOutOfMetaMask)
+                        setTimeout(() => {
+                            loginButton.addEventListener('click', loginWithMetaMask)
+                        }, 200)
+                    }
+                
+                // On document ready check if Metamask is there
+                window.addEventListener('DOMContentLoaded', () => {
+                    toggleButton()
+                });
+          </script>
+    </body>
+
+
+
+
+
+
+</html>
